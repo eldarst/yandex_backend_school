@@ -3,6 +3,8 @@ package com.yandex.yandexmarket.service;
 
 import com.yandex.yandexmarket.entity.Entity;
 
+import java.text.ParseException;
+import java.util.List;
 import java.util.UUID;
 
 public interface EntityService {
@@ -34,4 +36,11 @@ public interface EntityService {
      * @return - true если объект был удален, иначе false
      */
     boolean delete(UUID uuid);
+
+    /**
+     * Возвращает товары цена которых была обновлена за последние 24 часа включительно
+     * @param data - Дата и время запроса
+     * @return - Актуальные товары
+     */
+    List<Entity> sales(String data) throws ParseException;
 }

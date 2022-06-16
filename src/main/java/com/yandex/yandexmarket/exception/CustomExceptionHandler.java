@@ -26,18 +26,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(RecordNotFoundException.class)
     public final ResponseEntity<Object> handleUserNotFoundException(RecordNotFoundException ex, WebRequest request) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
-
         return new ResponseEntity("Record Not Found", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidEnterException.class)
+    public final ResponseEntity<Object> handleUserInvalidEnterException(InvalidEnterException ex, WebRequest request) {
+        return new ResponseEntity("Validation Failed", HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        List<String> details = new ArrayList<>();
-        for(ObjectError error : ex.getBindingResult().getAllErrors()) {
-            details.add(error.getDefaultMessage());
-        }
         return new ResponseEntity("Validation Failed", HttpStatus.BAD_REQUEST);
     }
 }

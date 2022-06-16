@@ -42,19 +42,41 @@ public class Entity {
 
     @JsonIgnore
     @Getter(AccessLevel.NONE)
-    private double sum = 0;
-
-    @JsonIgnore
     private int childCount = 0;
 
     public int getPrice() {
-        if (children == null) return price;
-        return children.size() > 0 ? (int) (sum / childCount) : (int) sum;
+        if (type == EntityType.OFFER) return price;
+
+        if (children == null) children = new ArrayList<>();
+
+        return (int) getAverage();
     }
 
-    public double getSum() {
-        return sum == 0 ? price : sum;
+    public int getChildCount() {
+        if (children == null) return 0;
+
+        return children.size();
     }
+
+    private double getAverage() {
+        double sum = 0, q = 0;
+        if (children.size() == 0) return 0;
+
+        for (Entity child: children) {
+            if (child.type == EntityType.CATEGORY) {
+                sum += child.getAverage() * child.getChildCount();
+                q += child.getChildCount();
+            } else
+            {
+                sum += child.price;
+                q++;
+            }
+        }
+        if (q == 0) return 0;
+
+        return sum / q;
+    }
+
 
     public void addChild(Entity entity) {
         if (children == null) children = new ArrayList<>();
