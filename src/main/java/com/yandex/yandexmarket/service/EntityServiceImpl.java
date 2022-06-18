@@ -2,8 +2,10 @@ package com.yandex.yandexmarket.service;
 
 import com.yandex.yandexmarket.entity.Entity;
 import com.yandex.yandexmarket.entity.EntityType;
+import com.yandex.yandexmarket.exception.InvalidEnterException;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -17,7 +19,8 @@ public class EntityServiceImpl implements EntityService {
 
 
     @Override
-    public void create(Entity entity) {
+    public void create(@Valid Entity entity) {
+        if (!entity.valid()) throw new InvalidEnterException("");
         ENTITY_REPOSITORY_MAP.put(entity.getId(), entity);
 
         if (entity.getParentId() != null) {

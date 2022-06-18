@@ -3,27 +3,26 @@ package com.yandex.yandexmarket.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Data
 @RequiredArgsConstructor
-@NoArgsConstructor
 @AllArgsConstructor
 public class Entity {
     @Id
-    @NonNull
+    @NotEmpty(message = "Not valid")
     private UUID id;
 
-    @NonNull
+    @NotEmpty(message = "Not valid")
     private String name;
 
-    @NonNull
+    @NotEmpty(message = "Not valid")
     private EntityType type;
 
     @Nullable
@@ -33,7 +32,7 @@ public class Entity {
     @Nullable
     private UUID parentId;
 
-    @NonNull
+    @NotEmpty(message = "Not valid")
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private Date date;
 
@@ -89,6 +88,13 @@ public class Entity {
                 .filter(x -> x.id.equals(entity.id))
                 .collect(Collectors.toCollection(ArrayList::new));
         list.forEach(children::remove);
+    }
+
+    public boolean valid() {
+        if (this.id == null || this.name == null || this.type == null || this.date == null) {
+            return false;
+        }
+        return true;
     }
 
 }

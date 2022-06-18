@@ -17,7 +17,6 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/components/schemas")
 public class EntityController {
 
     private final EntityService entityService;
@@ -34,11 +33,11 @@ public class EntityController {
         return new ResponseEntity<>("Hello, Eldar!", HttpStatus.OK);
     }
 
-    @PostMapping(value = "/ShopUnitImportRequest")
+    @PostMapping(value = "/imports")
     public ResponseEntity<?> create(@Valid @RequestBody RequestObject requestObject) {
         try {
             requestObjectService.create(requestObject);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new InvalidEnterException("");
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -46,11 +45,17 @@ public class EntityController {
 
     @GetMapping(value = "/nodes/{id}")
     public ResponseEntity<Object> read(@PathVariable(name = "id") String id) {
-        Entity entity = entityService.read(UUID.fromString(id));
+        try{
+            Entity entity = entityService.read(UUID.fromString(id));
+            return entity != null
+                    ? new ResponseEntity<>(entity, HttpStatus.OK)
+                    : new ResponseEntity<>("Item not found", HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException exception){
+            throw new InvalidEnterException("");
+        }
 
-        return entity != null
-                ? new ResponseEntity<>(entity, HttpStatus.OK)
-                : new ResponseEntity<>("Item not found", HttpStatus.NOT_FOUND);
+
+
     }
 
 
