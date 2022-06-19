@@ -3,10 +3,10 @@ package com.yandex.yandexmarket.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
+import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,33 +14,40 @@ import java.util.stream.Collectors;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
+@javax.persistence.Entity
+@Table(name = "Entities")
 public class Entity {
     @Id
-    @NotEmpty(message = "Not valid")
+    @Column(name = "id", nullable = false)
+    @Type(type="uuid-char")
     private UUID id;
 
-    @NotEmpty(message = "Not valid")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotEmpty(message = "Not valid")
+    @Column(name = "type", nullable = false)
     private EntityType type;
 
     @Nullable
     @Getter(AccessLevel.NONE)
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Nullable
-    private UUID parentId;
+    @ManyToOne
+    private Entity parent;
 
-    @NotEmpty(message = "Not valid")
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date", nullable = false)
     private Date date;
 
-    @Nullable
+    @OneToMany(mappedBy = "parent",
+            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Entity> children;
 
     @JsonIgnore
     @Getter(AccessLevel.NONE)
+    @Column(name = "child_count", nullable = false)
     private int childCount = 0;
 
     public int getPrice() {
