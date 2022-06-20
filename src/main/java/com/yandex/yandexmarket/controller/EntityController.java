@@ -34,7 +34,7 @@ public class EntityController {
     }
 
     @PostMapping(value = "/imports")
-    public ResponseEntity<?> create(@Valid @RequestBody RequestObject requestObject) {
+    public ResponseEntity<?> create(@RequestBody RequestObject requestObject) {
         try {
             requestObjectService.create(requestObject);
         } catch (Exception e) {

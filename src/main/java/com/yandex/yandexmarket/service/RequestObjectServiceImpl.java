@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class RequestObjectServiceImpl implements RequestObjectService{
@@ -32,6 +33,10 @@ public class RequestObjectServiceImpl implements RequestObjectService{
 
         for (Entity entity: requestObject.getItems()) {
             entity.setDate(date);
+            UUID parentId = entity.getParentId();
+            if (parentId != null) {
+                entity.setParent(entityService.read(parentId));
+            }
             if (entityService.read(entity.getId()) != null) {
                 entityService.update(entity, entity.getId());
             }

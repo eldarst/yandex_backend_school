@@ -3,6 +3,7 @@ package com.yandex.yandexmarket.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 
@@ -11,7 +12,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Data
+@Getter
+@Setter
+@ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
 @javax.persistence.Entity
@@ -33,16 +36,21 @@ public class Entity {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Entity parent;
 
+    @Type(type="uuid-char")
+    @Column(name = "parent_name")
+    private UUID parentId;
+
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    @Temporal(TemporalType.DATE)
     @Column(name = "date", nullable = false)
     private Date date;
 
-    @OneToMany(mappedBy = "parent",
-            fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Getter(AccessLevel.NONE)
+    @ToString.Exclude
     private List<Entity> children;
 
     @JsonIgnore
@@ -50,6 +58,12 @@ public class Entity {
     @Column(name = "child_count", nullable = false)
     private int childCount = 0;
 
+
+    public List<Entity> getChildren() {
+        if (children.size() == 0) return null;
+
+        return children;
+    }
     public int getPrice() {
         if (type == EntityType.OFFER) return price;
 
@@ -104,4 +118,16 @@ public class Entity {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Entity entity = (Entity) o;
+        return id != null && Objects.equals(id, entity.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
