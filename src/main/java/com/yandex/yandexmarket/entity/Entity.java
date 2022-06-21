@@ -51,7 +51,7 @@ public class Entity {
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Getter(AccessLevel.NONE)
     @ToString.Exclude
-    private List<Entity> children;
+    private List<Entity> children = new ArrayList<>();
 
     @JsonIgnore
     @Getter(AccessLevel.NONE)
@@ -64,6 +64,15 @@ public class Entity {
 
         return children;
     }
+
+    public void update(Entity updated) {
+        this.name = updated.getName();
+        this.price = updated.getPrice();
+        this.date = updated.getDate();
+        this.parentId = updated.getParentId();
+        this.parent = updated.getParent();
+    }
+
     public int getPrice() {
         if (type == EntityType.OFFER) return price;
 
@@ -95,20 +104,6 @@ public class Entity {
         if (q == 0) return 0;
 
         return sum / q;
-    }
-
-
-    public void addChild(Entity entity) {
-        if (children == null) children = new ArrayList<>();
-        children.add(entity);
-    }
-
-    public void deleteChild(Entity entity) {
-        if (children == null) return;
-        List<Entity> list = children.stream()
-                .filter(x -> x.id.equals(entity.id))
-                .collect(Collectors.toCollection(ArrayList::new));
-        list.forEach(children::remove);
     }
 
     public boolean valid() {

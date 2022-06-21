@@ -42,7 +42,9 @@ public class EntityServiceImpl implements EntityService {
     public boolean update(Entity entity, UUID uuid) {
         if (!entity.valid()) throw new InvalidEnterException("");
         try {
-            entityRepository.save(entity);
+            Entity old = read(uuid);
+            old.update(entity);
+            entityRepository.save(old);
             if (entity.getParent() != null)
                 updateParent(entity.getParent(), entity.getDate());
             return true;
