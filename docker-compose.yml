@@ -2,7 +2,7 @@ version: "3.8"
 services:
   mysql-db:
     image: mysql
-    restart: unless-stopped
+    restart: always
     env_file: ./.env
     environment:
       - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
@@ -15,7 +15,7 @@ services:
     links:
       - mysql-db
     build: .
-    restart: unless-stopped
+    restart: always
     env_file: ./.env
     ports:
       - 80:80
