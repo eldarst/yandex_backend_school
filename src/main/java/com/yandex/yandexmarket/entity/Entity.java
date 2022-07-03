@@ -84,7 +84,15 @@ public class Entity {
     public int getChildCount() {
         if (children == null) return 0;
 
-        return children.size();
+        int count = 0;
+        for (Entity child: children) {
+            if (child.type == EntityType.OFFER) {
+                ++count;
+            } else {
+                count += child.getChildCount();
+            }
+        }
+        return count;
     }
 
     private double getAverage() {
